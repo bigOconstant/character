@@ -1,0 +1,92 @@
+var bodyParser = require('body-parser');
+var express = require('express'),
+    app = express(),
+   //  bodyParser = require('body-parser');
+    crypto = require('crypto'),
+    engines = require('consolidate'),
+    bodyParser = require('body-parser'),
+    MongoClient = require('mongodb').MongoClient;
+    assert = require('assert');
+ // app.use(express.bodyParser()); 
+app.use(bodyParser.urlencoded());
+app.use(bodyParser.json());
+
+app.engine('html', engines.nunjucks);
+app.set('view engine', 'html');
+app.set('views', __dirname + "/views");
+
+MongoClient.connect("mongodb://localhost:27017/PATHFINDER", function(err, db) {
+
+    if(err) throw err;
+
+    console.log("Successfully connected to MongoDB.");
+
+    app.get('/', function(req, res) {
+	var blah = null;
+
+      db.collection('users').find({}).toArray(function(err, docs) {
+            if(err) throw err;
+
+            if (docs.length < 1) {
+                console.dir("No documents found. Did you forget to mongorestore?");
+                return res.send("No documents found. Did you forget to mongorestore?");
+            }
+   		blah = docs[0];
+	
+            return res.render('hello', { "name" : docs[0].user });
+	});
+       
+    });
+
+    function errorHandler(err, req, res, next) {
+    console.error(err.message);
+    console.error(err.stack);
+    res.status(500).render('error_template', { error: err });
+}
+    app.post('/Login', function(req, res, next) {
+    console.log("Logging in!");
+   // console.log(req);
+
+    var username = req.body.username;
+    var password = req.body.password;
+    console.log("Username = "+username);
+    console.log("Password = "+password);
+    if(username != null && username != "" && password != null && password != ""){
+	 db.collection('users').find({user:username}).toArray(function(err, docs) {
+		
+			if(err) throw err;
+	
+			if(docs.length < 1){
+				console.log("No documents found. Wrong username?");
+				res.send("No username found");
+			}
+			var user = docs[0];
+			if(user.password != password){
+				console.log("Incorrect password");
+				res.send("Ooop! wrong password");
+			}
+			else if(user.password == password){
+			console.log("Correct Password!");
+			res.send("<p>"+user.user+"</p>");
+			
+			}
+
+
+		}
+	)
+
+    }
+  
+      //  res.send("Made it to far");
+    
+});
+
+    app.use(function(req, res){
+        res.sendStatus(404);
+    });
+
+    var server = app.listen(3000, function() {
+        var port = server.address().port;
+        console.log("Express server listening on port %s.", port);
+    });
+});

@@ -1,0 +1,41 @@
+<script type="text/javascript" src="/lib/jquery-3.0.0.min.js"></script>
+<script type="text/javascript" src="/js/ajax.js"></script>
+
+
+<!-- Latest compiled and minified CSS -->
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" integrity="sha384-1q8mTJOASx8j1Au+a5WDVnPi2lkFfwwEAa8hDDdjZlpLegxhjVME1fgjWPGmkzs7" crossorigin="anonymous">
+
+
+<link rel="stylesheet" href="/css/userHome.css">
+
+
+<h1>User Home:{{username}}</h1>
+<label>Description:</label><br>
+<div id="discription-div"  >
+<textarea id="discription">{{description}}</textarea>
+
+</div>
+<button  id="save" onclick="SaveData()">save</button>
+
+
+<!-- Java script files after dom loads-->
+<script> 
+var description = '{{description}}';
+function ParseXML(val)
+{
+    if (window.DOMParser)
+      {
+        parser=new DOMParser();
+        xmlDoc=parser.parseFromString(val,"text/xml");
+      }
+    else // Internet Explorer
+      {
+        xmlDoc = new ActiveXObject("Microsoft.XMLDOM"); xmlDoc.loadXML(val);
+      }
+return xmlDoc ;
+}
+//var des = ParseXML(description);
+
+//document.getElementById("discription").innerHTML = des;
+</script>
+<script type="text/javascript" src="/js/userHome.js"></script>
